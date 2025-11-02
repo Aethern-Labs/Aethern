@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: Aethern Orchestrator API
+  version: "0.1.0"
+servers:
+  - url: https://api.symbion.network
+paths:
+  /requests:
+    post:
+      summary: Create execution request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecutionRequest'
+      responses:
+        '200':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionResponse'
+  /catalog:
+    get:
+      summary: Get available execution targets
+      responses:
+        '200':
+          description: Catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExecutionTarget'
+components:
+  schemas:
+    ExecutionRequest:
+      type: object
+      properties:
+        request_id:
+          type: string
+        client:
+          type: string
+        task_type:
+          type: string
+          enum: [smart_contract, zk_compute, micropayment]
+        privacy_level:
+          type: string
+          enum: [public, confidential, zk]
+        max_cost:
+          type: number
+        max_latency_ms:
+          type: integer
+        sla_priority:
+          type: string
+          enum: [low, medium, high]
+      required: [request_id, client, task_type]
+    ExecutionResponse:
+      type: object
+      properties:
+        request_id: { type: string }
+        status: { type: string }
+        target: { type: string }
+    ExecutionTarget:
+      type: object
+      properties:
+        id: { type: string }
+        chain: { type: string }
+        cost_score: { type: number }
+        latency_ms: { type: integer }
+        privacy_support: { type: boolean }
+        adapt_score: { type: number }
